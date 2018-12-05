@@ -21,4 +21,10 @@ public class Line {
     	
     	return null;
     }
+    
+    public Point findIntersectionWithSide(Point a, Point b) {
+    	//TODO: find intersection between a line and a side of a polygon
+    	
+    	return null;
+    }
 }
