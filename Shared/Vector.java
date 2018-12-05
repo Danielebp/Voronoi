@@ -38,4 +38,9 @@ public class Vector {
     public Vector multiply(double scalar) {
         return new Vector(x * scalar, y * scalar);
     }
+
+    @Override
+    public String toString() {
+        return "" + x + " " + y;
+    }
 }
