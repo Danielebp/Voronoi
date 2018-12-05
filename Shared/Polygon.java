@@ -96,17 +96,22 @@ public class Polygon {
         	// updates last point with current
         	last = p;
         }
-    	
-        // if point was in p2 then we have to update the current polygon
+        
     	if(p2 != null) {
+    		// polygon was only touched in one vertex so we just keep the original polygon
+    		if(p2.points.size() <= 2) return;
+    		
+    		// point was in p2, we have to update the current polygon
     		this.points = p2.points;
     	}
-    	// if point is in p1 then we check if any intersection was even found, if not we do not have to update anything
+    	// if point is in p1 then we check if any intersection was even found
+    	// if not we do not have to update anything
     	else if (intersection1 != null){
     		// we were missing one point on p1
     		p1.addPoint(last);
+    		
+    		// point is in p1, we have to update the current polygon
     		this.points = p1.points;
     	}
-    	// else it is the same polygon, do not do anything
     }
 }
