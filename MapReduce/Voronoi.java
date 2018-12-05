@@ -38,13 +38,32 @@ public class Voronoi {
 
 	public static class Reduce extends MapReduceBase implements Reducer<Text, Text, Text, Text> {
 
+		private int sizeX;
+		private int sizeY;
+
+		public void configure(JobConf conf) {
+			sizeX = Integer.valueOf(conf.get("sizeX"));
+			sizeY = Integer.valueOf(conf.get("sizeY"));
+		}
+
 		public void reduce(Text key,
 						   Iterator<Text> values,
 						   OutputCollector<Text, Text> output,
 						   Reporter reporter) throws IOException {
+			Point point = new Point(key.toString());
+			Polygon polygon = new Polygon();
+			polygon.addPoint(new Point(0, 0));
+			polygon.addPoint(new Point(sizeX, 0));
+			polygon.addPoint(new Point(sizeX, sizeY));
+			polygon.addPoint(new Point(0, sizeY));
+
 			while (values.hasNext()) {
-				output.collect(key, values.next());
+				String stringValue = values.next().toString();
+				Line line = new Line(stringValue);
+				polygon.splitPolygon(line, point);
 			}
+
+			output.collect(key, new Text(polygon.toString()));
 		}
 	}
 
@@ -77,6 +96,8 @@ public class Voronoi {
 			}
 
 			conf.set("keyCount", String.valueOf(keyCount));
+			conf.set("sizeX", args[3]);
+			conf.set("sizeY", args[4]);
 
 			JobClient.runJob(conf);
 		} catch (Exception e) {
