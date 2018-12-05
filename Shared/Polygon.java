@@ -27,9 +27,9 @@ public class Polygon {
     	return false;
     }
     
+    // updates the current polygon with a better one if possible
     public void splitPolygon(Line line, Point initialPoint) {
-    	
-    	// 2 new polygons when spliting original with line
+    	// 2 new polygons when splitting original with line
     	Polygon p1 = new Polygon();
     	Polygon p2 = new Polygon();
     	
@@ -38,56 +38,54 @@ public class Polygon {
     	Point intersection1 = null;
     	Point intersection2 = null;
     	
-    	// last point visited
-    	Point last = null;
+    	// first point pairs with the last
+    	Point last = points.get(points.size() - 1);;
     	
     	// iterates over all points that form the polygon
         for (Point p : points) {
-        	if(last != null) {
+        	
+    		// if we did not find any intersection or if we have seen both then we are on the first polygon
+    		if(intersection1 == null || intersection2 != null) {
+        		// adds last point to current polygon
+    			p1.addPoint(last);
         		
-        		// if we did not find any intersection or if we have seen both then we are on the first polygon
-        		if(intersection1 == null || intersection2 != null) {
-	        		// adds last point to current polygon
-        			p1.addPoint(last);
+    			// check for intersection between current side and the line
+    			// current side is the line between last and current point
+	        	Point intersection = line.findIntersectionWithSide(last, p);
+	        	if(intersection != null) {
+	        		// if intersection was found add the intersection to both polygons
+	        		p1.addPoint(intersection);
+	        		p2.addPoint(intersection);
 	        		
-        			// check for intersection between current side and the line
-        			// current side is the line between last and current point
-		        	Point intersection = line.findIntersectionWithSide(last, p);
-		        	if(intersection != null) {
-		        		// if intersection was found add the intersection to both polygons
-		        		p1.addPoint(intersection);
-		        		p2.addPoint(intersection);
-		        		
-		        		// saves intersection
-		        		intersection1 = intersection;
-		        	}
-        		} // if we have seen one of the intersections but have not seen the second yet then we are navigating the second polygon
-        		else {
-        			// adds last point to current polygon
-        			p2.addPoint(last);
-        			
-        			// check for intersection between current side and the line
-        			// current side is the line between last and current point
-        			Point intersection = line.findIntersectionWithSide(last, p);
-		        	if(intersection != null) {
-		        		// if intersection was found add the intersection to both polygons
-		        		p1.addPoint(intersection);
-		        		p2.addPoint(intersection);
-		        		
-		        		// saves intersection
-		        		intersection2 = intersection;
-		        		
-		        		// calculates in which side of the line the initial point is
-		        		double value = (intersection2.getX() - intersection1.getX())*(initialPoint.getY() - intersection1.getY()) - 
-		        						(initialPoint.getX() - intersection1.getX())*(intersection2.getY() - intersection1.getY());
-		        		// initial point is in p1
-        				if (value > 0) {
-        					p2 = null;
-        				}
-        				else {// initial point in p2 
-        					p1 = null;
-        					break; // if point is in p2 we dont need to find the rest of p1
-        				}
+	        		// saves intersection
+	        		intersection1 = intersection;
+	        	}
+    		} // if we have seen one of the intersections but have not seen the second yet then we are navigating the second polygon
+    		else {
+    			// adds last point to current polygon
+    			p2.addPoint(last);
+    			
+    			// check for intersection between current side and the line
+    			// current side is the line between last and current point
+    			Point intersection = line.findIntersectionWithSide(last, p);
+	        	if(intersection != null) {
+	        		// if intersection was found add the intersection to both polygons
+	        		p1.addPoint(intersection);
+	        		p2.addPoint(intersection);
+	        		
+	        		// saves intersection
+	        		intersection2 = intersection;
+	        		
+	        		// calculates in which side of the line the initial point is
+	        		double value = (intersection2.getX() - intersection1.getX())*(initialPoint.getY() - intersection1.getY()) - 
+	        						(initialPoint.getX() - intersection1.getX())*(intersection2.getY() - intersection1.getY());
+	        		// initial point is in p1
+    				if (value > 0) {
+    					p2 = null;
+    				}
+    				else {// initial point in p2 
+    					p1 = null;
+    					break; // if point is in p2 we dont need to find the rest of p1
 		        	}
         		}
         		
@@ -107,9 +105,6 @@ public class Polygon {
     	// if point is in p1 then we check if any intersection was even found
     	// if not we do not have to update anything
     	else if (intersection1 != null){
-    		// we were missing one point on p1
-    		p1.addPoint(last);
-    		
     		// point is in p1, we have to update the current polygon
     		this.points = p1.points;
     	}
