@@ -17,8 +17,8 @@ public class Vector {
 
     public Vector(String stringValue) {
         String[] split = stringValue.split(" ");
-        x = Integer.valueOf(split[0]);
-        y = Integer.valueOf(split[1]);
+        x = Double.valueOf(split[0]);
+        y = Double.valueOf(split[1]);
     }
 
     public double getX() {
@@ -37,5 +37,10 @@ public class Vector {
     /** Multiplies vector with given scalar and returns resulting new vector */
     public Vector multiply(double scalar) {
         return new Vector(x * scalar, y * scalar);
+    }
+
+    @Override
+    public String toString() {
+        return "" + x + " " + y;
     }
 }

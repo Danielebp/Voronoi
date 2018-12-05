@@ -11,14 +11,19 @@ public class Line {
     }
 
     public Line(String stringValue) {
-        String[] split = stringValue.split("|");
+        String[] split = stringValue.split(";");
         point = new Point(split[0]);
         vector = new Vector(split[1]);
     }
-    
+
+    @Override
+    public String toString() {
+        return point.toString() + ";" + vector.toString();
+    }
+
     public Point findIntersection(Line line) {
     	//TODO: find intersection between 2 lines
-    	
+
     	return null;
     }
     

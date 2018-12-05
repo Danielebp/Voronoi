@@ -114,4 +114,17 @@ public class Polygon {
     		this.points = p1.points;
     	}
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Point point : points) {
+            sb.append(point.toString());
+            sb.append(";");
+        }
+
+        sb.setLength(sb.length() - 1);
+
+        return sb.toString();
+    }
 }
