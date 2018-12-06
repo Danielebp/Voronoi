@@ -1,13 +1,14 @@
+import sys
 import PIL.ImageDraw as ImageDraw
 import PIL.Image as Image
 from random import random
 import math
 
-sizeX, sizeY = 300.0, 300.0
+sizeX, sizeY = int(sys.argv[1]), int(sys.argv[2])
 image = Image.new("RGB", (int(sizeX), int(sizeY)))
 draw = ImageDraw.Draw(image)
 
-with open("results.txt") as voronoi:
+with open(sys.argv[3]) as voronoi:
     for line in voronoi:
         pointStr, polygonStr = line.split("\t")
         point = (float(pointStr.split()[0]), float(pointStr.split()[1]))
