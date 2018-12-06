@@ -1,4 +1,4 @@
-package mpi;
+package mpiVersion;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import mpi.*;
 import sharedClasses.*;
 
 public class Voronoi {
@@ -15,6 +17,18 @@ public class Voronoi {
 		Polygon initialBoundary = defineBoundaries (VoronoiPoints);
 		
 		ArrayList<Polygon> finalDiagram = new ArrayList<Polygon>();
+		
+		MPI.Init( args );		      // Start MPI computation
+		
+	    if ( MPI.COMM_WORLD.rank() == 0 ) { // rank 0…sender
+	    	// do something
+	    	MPI.COMM_WORLD.Send( "Hello World!", 12, MPI.CHAR, 1, tag0 );
+	      	MPI.COMM_WORLD.Send( loop, 1, MPI.INT, 1, tag0 );
+	    } else {           
+	    	// do something else
+	    	MPI::COMM_WORLD.Recv( msg, 12, MPI.CHAR, 0, tag0 );
+	    	MPI::COMM_WORLD.Recv( loop, 1, MPI.INT, 0, tag0 );
+	    }
 		
 		for(Point initialPoint : VoronoiPoints) {
 			Polygon cell = initialBoundary.getCopy();
@@ -27,6 +41,8 @@ public class Voronoi {
 			finalDiagram.add(cell);
 		}
 		
+	    MPI.Finalize( );		      // Finish MPI computation
+
 		for(Polygon p : finalDiagram) {
 			//p.plot();
 		}
