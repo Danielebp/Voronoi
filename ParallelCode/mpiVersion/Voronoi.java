@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 
 //import mpi.*;
 import sharedClasses.*;
@@ -20,11 +20,11 @@ public class Voronoi {
 		ArrayList<Point> VoronoiPoints = loadPoints(fileIn);
 		Polygon initialBoundary = defineBoundaries (maxX, maxY);
 		
-		ArrayList<Polygon> finalDiagram = new ArrayList<Polygon>();
+		Map<Point, Polygon> finalDiagram = new HashMap<Point, Polygon>();
 		
-		/*MPI.Init( args );		      // Start MPI computation
+//		MPI.Init( args );		      // Start MPI computation
 		
-	    if ( MPI.COMM_WORLD.rank() == 0 ) { // rank 
+	    /*if ( MPI.COMM_WORLD.rank() == 0 ) { // rank 
 	    	// do something
 	    	MPI.COMM_WORLD.Send( "Hello World!", 12, MPI.CHAR, 1, tag0 );
 	      	MPI.COMM_WORLD.Send( loop, 1, MPI.INT, 1, tag0 );
@@ -33,8 +33,7 @@ public class Voronoi {
 	    	MPI::COMM_WORLD.Recv( msg, 12, MPI.CHAR, 0, tag0 );
 	    	MPI::COMM_WORLD.Recv( loop, 1, MPI.INT, 0, tag0 );
 	    }*/
-		try {
-		PrintWriter out = new PrintWriter(fileOut);	
+		
 		for(Point initialPoint : VoronoiPoints) {
 			Polygon cell = initialBoundary.getCopy();
 			
@@ -45,16 +44,22 @@ public class Voronoi {
 				cell.splitPolygon(middleLine, initialPoint);
 			}
 			
-			finalDiagram.add(cell);
-			out.println(initialPoint.toString() + "\t" + (cell.toString()));
+			finalDiagram.put(initialPoint, cell);
 		}
-		out.close();
+		
+	    //MPI.Finalize( );		      // Finish MPI computation
+
+		try {
+		    PrintWriter out = new PrintWriter(fileOut);		   
+	
+		    for ( Map.Entry<Point, Polygon> entry : finalDiagram.entrySet() ) {
+		    	out.println(entry.getKey().toString() + "\t" + (entry.getValue().toString()));
+		    }
+			out.close();
 		}
 		catch(Exception e){
 			System.out.println(e.toString());
 		}
-	    //MPI.Finalize( );		      // Finish MPI computation
-
 	}
 
 	public static ArrayList<Point> loadPoints(String filename) {
