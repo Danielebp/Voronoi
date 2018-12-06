@@ -21,7 +21,10 @@ public class Polygon {
     public void removePoint(Point point) {
     	points.remove(point);
     }
-    
+
+    public List<Point> getPoints(){
+    	return points;
+	}
     public boolean containsPoint(Point point){
     	//TODO: check if polygon contain point
     	
