@@ -1,3 +1,4 @@
+package mapReduce;
 import sharedClasses.*;
 
 import java.io.IOException;
