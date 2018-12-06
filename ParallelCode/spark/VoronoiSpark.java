@@ -54,10 +54,10 @@ public class VoronoiSpark {
             Point center = new Point(C._1());
             Double X = Double.parseDouble(conf.get("WindowX"));
             Double Y = Double.parseDouble(conf.get("WindowY"));
-            Point p1 = new Point(center.getX() - X / 2, center.getY() - Y / 2);
-            Point p2 = new Point(center.getX() + X / 2, center.getY() - Y / 2);
-            Point p3 = new Point(center.getX() - X / 2, center.getY() + Y / 2);
-            Point p4 = new Point(center.getX() + X / 2, center.getY() + Y / 2);
+            Point p1 = new Point(0, 0);
+            Point p2 = new Point(X, 0);
+            Point p3 = new Point(0, Y);
+            Point p4 = new Point(X, Y);
             Polygon polygon = new Polygon(List.of(p1, p2, p3, p4));
 
             for (Line line : C._2()) {
@@ -68,10 +68,7 @@ public class VoronoiSpark {
 
         Map<String, Polygon> polygonMap = cell.collectAsMap();
         for (String key : polygonMap.keySet()) {
-            System.out.println("sitePOint: " + key);
-            for (Point newPoint : polygonMap.get(key).getPoints()) {
-                System.out.print(" " + newPoint.toString());
-            }
+            System.out.println("sitePOint: " + key + " " + polygonMap.toString());
         }
 
     }
