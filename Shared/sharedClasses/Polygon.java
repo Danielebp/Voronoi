@@ -28,6 +28,16 @@ public class Polygon {
     	return false;
     }
     
+    public Polygon getCopy() {
+    	Polygon copy = new Polygon();
+    	
+    	for(Point p : points) {
+    		copy.addPoint(p);
+    	}
+    	
+    	return copy;
+    }
+    
     // updates the current polygon with a better one if possible
     public void splitPolygon(Line line, Point initialPoint) {
     	// 2 new polygons when splitting original with line
