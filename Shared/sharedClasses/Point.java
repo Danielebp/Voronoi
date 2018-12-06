@@ -1,3 +1,4 @@
+package sharedClasses;
 
 /** Represents a point in a 2D space */
 public class Point {

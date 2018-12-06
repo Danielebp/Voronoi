@@ -1,14 +1,23 @@
 package mpi;
 
-public class Voronoi {
+import java.util.ArrayList;
+import sharedClasses.*;
 
-	public Voronoi() {
-		// TODO Auto-generated constructor stub
-	}
+public class Voronoi {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
 	}
 
+	public ArrayList<Point> loadPoints() {
+		
+	}
+	
+	public void defineBoundaries () {
+		
+	}
+	
+	
+	
 }

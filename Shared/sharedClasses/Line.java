@@ -1,3 +1,4 @@
+package sharedClasses;
 
 /** Line in 2D space represented by a starting point and a vector */
 public class Line {
