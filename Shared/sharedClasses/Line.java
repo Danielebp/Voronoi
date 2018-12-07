@@ -12,14 +12,14 @@ public class Line implements java.io.Serializable{
     }
 
     public Line(String stringValue) {
-        String[] split = stringValue.split(";");
+        String[] split = stringValue.split("_");
         point = new Point(split[0]);
         vector = new Vector(split[1]);
     }
 
     @Override
     public String toString() {
-        return point.toString() + ";" + vector.toString();
+        return point.toString() + "_" + vector.toString();
     }
 
     public Point findIntersection(Line line) {
@@ -46,8 +46,8 @@ public class Line implements java.io.Serializable{
         double determinant = a1 * b2 - a2 * b1;
 
         if (determinant != 0) {
-            double x = (b2 * c1 - b1 * c2) / determinant;
-            double y = (a1 * c2 - a2 * c1) / determinant;
+            double x =  Math.floor((b2 * c1 - b1 * c2) / determinant * 1000) / 1000;
+            double y = Math.floor((a1 * c2 - a2 * c1) / determinant * 1000) / 1000;
 
             // Check if intersection is in between point a and b
             if (Math.min(a.getX(), b.getX()) <= x && Math.max(a.getX(), b.getX()) >= x &&
