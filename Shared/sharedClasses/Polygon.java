@@ -53,7 +53,7 @@ public class Polygon {
 
     	// iterates over all points that form the polygon
         for (Point p : points) {
-
+		if(p.equals(initialPoint)) continue;
     		// if we did not find any intersection or if we have seen both then we are on the first polygon
     		if(intersection1 == null || intersection2 != null) {
         		// adds last point to current polygon
