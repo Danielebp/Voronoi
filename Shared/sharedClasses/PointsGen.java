@@ -1,4 +1,3 @@
-package sharedClasses;
 import java.util.List;
 import java.util.ArrayList;
 import java.nio.file.Path;

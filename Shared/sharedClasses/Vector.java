@@ -1,4 +1,3 @@
-package sharedClasses;
 
 /** Represents a vector in 2D space */
 public class Vector {
