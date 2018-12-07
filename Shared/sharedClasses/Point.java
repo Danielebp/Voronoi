@@ -1,4 +1,3 @@
-package sharedClasses;
 import java.io.*;
 
 /** Represents a point in a 2D space */

@@ -1,4 +1,3 @@
-package sharedClasses;
 import java.io.*;
 
 /** Represents a vector in 2D space */

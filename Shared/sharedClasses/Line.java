@@ -1,4 +1,3 @@
-package sharedClasses;
 import java.io.*;
 
 /** Line in 2D space represented by a starting point and a vector */
