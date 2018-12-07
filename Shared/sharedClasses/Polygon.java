@@ -1,8 +1,9 @@
 package sharedClasses;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.*;
 
-public class Polygon {
+public class Polygon implements java.io.Serializable{
 
     private List<Point> points;
 

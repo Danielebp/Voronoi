@@ -6,36 +6,57 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.*;
 
-//import mpi.*;
+import mpi.*;
 import sharedClasses.*;
 
 public class Voronoi {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws MPIException{
 		String fileIn = args[0];
 		String fileOut = args [1];
 		Integer maxX = Integer.parseInt(args[2]);
 		Integer maxY = Integer.parseInt(args[3]);
 
-		ArrayList<Point> VoronoiPoints = loadPoints(fileIn);
-		Polygon initialBoundary = defineBoundaries (maxX, maxY);
+				
+		int nPoints = 0;
+		Polygon initialBoundary = new Polygon();
 		
 		Map<Point, Polygon> finalDiagram = new HashMap<Point, Polygon>();
+		Polygon cell = new Polygon();
 		
-//		MPI.Init( args );		      // Start MPI computation
+		MPI.Init( args );		      // Start MPI computation
 		
-	    /*if ( MPI.COMM_WORLD.rank() == 0 ) { // rank 
-	    	// do something
-	    	MPI.COMM_WORLD.Send( "Hello World!", 12, MPI.CHAR, 1, tag0 );
-	      	MPI.COMM_WORLD.Send( loop, 1, MPI.INT, 1, tag0 );
-	    } else {           
-	    	// do something else
-	    	MPI::COMM_WORLD.Recv( msg, 12, MPI.CHAR, 0, tag0 );
-	    	MPI::COMM_WORLD.Recv( loop, 1, MPI.INT, 0, tag0 );
-	    }*/
+		int rankSize = MPI.COMM_WORLD.Size();
+		int rank = MPI.COMM_WORLD.Rank( );   
+		ArrayList<Point> points = new ArrayList();
 		
-		for(Point initialPoint : VoronoiPoints) {
-			Polygon cell = initialBoundary.getCopy();
+		if (rank == 0) {
+			points = loadPoints(fileIn);
+			nPoints = points.size();
+		}
+
+		MPI.COMM_WORLD.Bcast(nPoints, 0, 1, MPI.INT, 0);
+		Point[] VoronoiPoints = new Point[nPoints]; 
+		
+		if (rank == 0) {
+			VoronoiPoints = points.toArray(new Point[nPoints]);
+			initialBoundary = defineBoundaries (maxX, maxY);
+		}
+		
+		Point[] myPoints = new Point[nPoints/rankSize];
+		Map<Point, Polygon> myDiagram = new HashMap<Point, Polygon>();
+		
+		if(rank == 0) {
+			System.out.println(VoronoiPoints.length);
+			System.out.println(nPoints);
+		}
+		
+		MPI.COMM_WORLD.Bcast(VoronoiPoints, 0, nPoints, MPI.OBJECT, 0);
+    	MPI.COMM_WORLD.Bcast(initialBoundary, 0, 1, MPI.OBJECT, 0);
+    	MPI.COMM_WORLD.Scatter(VoronoiPoints,0,nPoints/rankSize,MPI.OBJECT,myPoints,0,nPoints/rankSize,MPI.OBJECT,0);
+    	
+		for(Point initialPoint : myPoints) {
+			//Polygon cell = initialBoundary.getCopy();
 			
 			for(Point pair : VoronoiPoints) {
 				if(initialPoint.equals(pair)) continue;
@@ -44,12 +65,14 @@ public class Voronoi {
 				cell.splitPolygon(middleLine, initialPoint);
 			}
 			
-			finalDiagram.put(initialPoint, cell);
+			myDiagram.put(initialPoint, cell);
 		}
 		
-	    //MPI.Finalize( );		      // Finish MPI computation
+		MPI.COMM_WORLD.Gather(finalDiagram,0,nPoints/rankSize,MPI.OBJECT,myDiagram,0,nPoints/rankSize,MPI.OBJECT, 0);
+		
+	    MPI.Finalize( );		      // Finish MPI computation
 
-		try {
+	    try {
 		    PrintWriter out = new PrintWriter(fileOut);		   
 	
 		    for ( Map.Entry<Point, Polygon> entry : finalDiagram.entrySet() ) {

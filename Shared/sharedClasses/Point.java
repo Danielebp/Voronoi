@@ -1,7 +1,8 @@
 package sharedClasses;
+import java.io.*;
 
 /** Represents a point in a 2D space */
-public class Point {
+public class Point implements java.io.Serializable{
 
     private double x;
     private double y;

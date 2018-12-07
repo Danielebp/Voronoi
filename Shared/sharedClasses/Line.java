@@ -1,7 +1,8 @@
 package sharedClasses;
+import java.io.*;
 
 /** Line in 2D space represented by a starting point and a vector */
-public class Line {
+public class Line implements java.io.Serializable{
 
     private Point point;
     private Vector vector;

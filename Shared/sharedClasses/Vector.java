@@ -1,7 +1,8 @@
 package sharedClasses;
+import java.io.*;
 
 /** Represents a vector in 2D space */
-public class Vector {
+public class Vector implements java.io.Serializable{
 
     private double x;
     private double y;
