@@ -79,9 +79,11 @@ public class Polygon implements java.io.Serializable{
     			// current side is the line between last and current point
 	        	Point intersection = line.findIntersectionWithSide(last, p);
 	        	if(intersection != null) {
+	        		if(intersection.equals(last)) continue;
+	        		
 	        		// if intersection was found add the intersection to both polygons
 	        		p1.addPoint(intersection);
-	        		p2.addPoint(intersection);
+	        		if(p2!=null)p2.addPoint(intersection);
 
 	        		// saves intersection
 	        		intersection1 = intersection;
@@ -95,6 +97,7 @@ public class Polygon implements java.io.Serializable{
     			// current side is the line between last and current point
     			Point intersection = line.findIntersectionWithSide(last, p);
 	        	if(intersection != null) {
+	        		if(intersection.equals(last)) continue;
 	        		// if intersection was found add the intersection to both polygons
 	        		p1.addPoint(intersection);
 	        		p2.addPoint(intersection);
