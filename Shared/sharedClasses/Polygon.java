@@ -4,11 +4,26 @@ import java.io.*;
 
 public class Polygon implements java.io.Serializable{
 
-    private List<Point> points;
+    private ArrayList<Point> points;
 
-    public Polygon(List<Point> points) {
+    public ArrayList<Point> getPoints() {
+		return points;
+	}
+
+	public void setPoints(ArrayList<Point> points) {
+		this.points = points;
+	}
+
+	public Polygon(ArrayList<Point> points) {
         this.points = points;
     }
+	
+	public Polygon (String line) {
+		this.points = new ArrayList<Point>();
+		for (String val : line.split(";")) {
+            points.add(new Point(val));
+        }
+	}
 
     public Polygon() {
         points = new ArrayList<>();
@@ -120,7 +135,7 @@ public class Polygon implements java.io.Serializable{
     		this.points = p1.points;
     	}
     }
-
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
