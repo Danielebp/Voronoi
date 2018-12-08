@@ -28,4 +28,5 @@ with open(sys.argv[3]) as voronoi:
         			  min(math.floor(sizeX), math.floor(point[0] + 3.0)),
         			  min(math.floor(sizeY), math.floor(y + 3.0))), fill='black')#(r+20, g+20, b+20))
 
+image.save('voronoi.png')
 image.show()
