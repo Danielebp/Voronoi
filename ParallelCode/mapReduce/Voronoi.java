@@ -1,6 +1,3 @@
-package mapReduce;
-import sharedClasses.*;
-
 import java.io.IOException;
 import java.util.*;
 import java.io.BufferedReader;
@@ -19,6 +16,7 @@ public class Voronoi {
 		private Point[] points;
 
 		public void configure(JobConf conf) {
+			// Get list of all points
 			points = new Point[Integer.valueOf(conf.get("keyCount"))];
 			for (int i = 0; i < points.length; i++) {
 				points[i] = new Point(conf.get("point" + i));
@@ -29,11 +27,14 @@ public class Voronoi {
 						Text value,
 						OutputCollector<Text, Text> output,
 						Reporter reporter) throws IOException {
+			Point otherPoint = new Point(value.toString());
 
+			// Calculate equidistant line for each point with other point
 			for (Point point : points) {
-				Point otherPoint = new Point(value.toString());
-				Line line = point.getEquidistantLine(otherPoint);
+				if (point.equals(otherPoint))
+					continue;
 
+				Line line = point.getEquidistantLine(otherPoint);
 				output.collect(new Text(point.toString()), new Text(line.toString()));
 			}
 		}
@@ -43,30 +44,59 @@ public class Voronoi {
 
 		private int sizeX;
 		private int sizeY;
+		private int keyCount;
 
 		public void configure(JobConf conf) {
 			sizeX = Integer.valueOf(conf.get("sizeX"));
 			sizeY = Integer.valueOf(conf.get("sizeY"));
+			keyCount = Integer.valueOf(conf.get("keyCount"));
 		}
 
 		public void reduce(Text key,
 						   Iterator<Text> values,
 						   OutputCollector<Text, Text> output,
 						   Reporter reporter) throws IOException {
-			Point point = new Point(key.toString());
-			Polygon polygon = new Polygon();
-			polygon.addPoint(new Point(0, 0));
-			polygon.addPoint(new Point(sizeX, 0));
-			polygon.addPoint(new Point(sizeX, sizeY));
-			polygon.addPoint(new Point(0, sizeY));
+			List<Line> lines = new ArrayList<>();
 
 			while (values.hasNext()) {
-				String stringValue = values.next().toString();
-				Line line = new Line(stringValue);
-				polygon.splitPolygon(line, point);
+				String value = values.next().toString();
+
+				if (value.contains("_")) {
+					String[] linesStr = value.split(":");
+					for (String lineStr : linesStr) {
+						System.out.println(lineStr);
+						lines.add(new Line(lineStr));
+					}
+				} else {
+					output.collect(key, new Text(value));
+					return;
+				}
 			}
 
-			output.collect(key, new Text(polygon.toString()));
+			if (lines.size() == keyCount - 1) {
+				Point point = new Point(key.toString());
+				Polygon polygon = new Polygon();
+				polygon.addPoint(new Point(0, 0));
+				polygon.addPoint(new Point(sizeX, 0));
+				polygon.addPoint(new Point(sizeX, sizeY));
+				polygon.addPoint(new Point(0, sizeY));
+				for (Line line : lines) {
+					polygon.splitPolygon(line, point);
+				}
+
+				System.out.println(polygon.toString());
+				output.collect(key, new Text(polygon.toString()));
+			} else {
+				StringBuilder sb = new StringBuilder();
+				for (Line line : lines) {
+					sb.append(line.toString());
+					sb.append(":");
+				}
+
+				sb.setLength(sb.length() - 1);
+
+				output.collect(key, new Text(sb.toString()));
+			}
 		}
 	}
 
@@ -87,8 +117,17 @@ public class Voronoi {
 		FileInputFormat.setInputPaths(conf, new Path(args[0]));
 		FileOutputFormat.setOutputPath(conf, new Path(args[1]));
 
+		setKeyPoints(conf, args[2]);
+
+		conf.set("sizeX", args[3]);
+		conf.set("sizeY", args[4]);
+
+		JobClient.runJob(conf);
+	}
+
+	private static void setKeyPoints(JobConf conf, String filename) {
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(args[2]));
+			BufferedReader br = new BufferedReader(new FileReader(filename));
 			int keyCount = 0;
 
 			String line = br.readLine();
@@ -98,11 +137,9 @@ public class Voronoi {
 				line = br.readLine();
 			}
 
-			conf.set("keyCount", String.valueOf(keyCount));
-			conf.set("sizeX", args[3]);
-			conf.set("sizeY", args[4]);
+			System.out.println("Key count: " + keyCount);
 
-			JobClient.runJob(conf);
+			conf.set("keyCount", String.valueOf(keyCount));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
