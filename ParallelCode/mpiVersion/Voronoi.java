@@ -25,6 +25,9 @@ public class Voronoi {
 		int rankSize = MPI.COMM_WORLD.Size();
 		int rank = MPI.COMM_WORLD.Rank( );   
 		
+		long start;
+		
+		if(rank == 0) start = System.currentTimeMillis();
 		
 		ArrayList<Point> points = new ArrayList();
 		
@@ -53,14 +56,14 @@ public class Voronoi {
 		
 		MPI.COMM_WORLD.Scatter(VoronoiPoints,0,nPoints[0]/rankSize,MPI.OBJECT,myPoints,0,nPoints[0]/rankSize,MPI.OBJECT,0);
 		
-		System.out.println(rank + ": " + (String)strBounds[0]);
+		//System.out.println(rank + ": " + (String)strBounds[0]);
     	initialBoundary = new Polygon((String)strBounds[0]);
 		
     	Object [] myDiagram = new Object[myPoints.length];
     	int i = 0;
 		for(Object ob1 : myPoints) {
 			Point initialPoint = (Point)ob1;
-			System.out.println(rank + ": " + initialPoint.toString());
+			//System.out.println(rank + ": " + initialPoint.toString());
 			Polygon cell = initialBoundary.getCopy();
 			
 			for(Object ob2 : VoronoiPoints) {
@@ -76,6 +79,10 @@ public class Voronoi {
 		
 		MPI.COMM_WORLD.Gather(myDiagram,0,nPoints[0]/rankSize,MPI.OBJECT, finalDiagram,0,nPoints[0]/rankSize,MPI.OBJECT, 0);
 		
+		long finish;
+		
+		if(rank == 0) finish = System.currentTimeMillis();
+		
 	    MPI.Finalize( );		      // Finish MPI computation
 
 	    try {
@@ -89,6 +96,11 @@ public class Voronoi {
 		catch(Exception e){
 			System.out.println(e.toString());
 		}
+	    
+	    if(rank == 0) {
+	    	long timeElapsed = finish - start;
+	    	System.out.println("Elapsed Time: " + timeElapsed/1000);
+	    }
 	}
 
 	public static ArrayList<Point> loadPoints(String filename) {
