@@ -55,10 +55,6 @@ public class Polygon implements java.io.Serializable{
 
     // updates the current polygon with a better one if possible
     public void splitPolygon(Line line, Point initialPoint) {
-        if (initialPoint.getX() == 855.0 && initialPoint.getY() == 595.0) {
-            System.out.println("Splitting polygon with line: " + line.toString());
-        }
-
     	// 2 new polygons when splitting original with line
     	Polygon p1 = new Polygon();
     	Polygon p2 = new Polygon();
