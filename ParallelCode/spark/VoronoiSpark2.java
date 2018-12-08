@@ -1,25 +1,21 @@
-package spark;
-
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.netbeans.mdr.handlers.ImmutableList;
 import scala.Tuple2;
-import sharedClasses.Line;
-import sharedClasses.Point;
-import sharedClasses.Polygon;
-import sharedClasses.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.io.PrintWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class VoronoiSpark2 {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // start Sparks and read a given input file
         String inputFile = args[0];
         //final Pattern SPACES = Pattern.compile("=|,|;");
@@ -47,13 +43,10 @@ public class VoronoiSpark2 {
 
         JavaPairRDD<String, Line> lineNetwork = pair.mapToPair(line -> {
             Point p1 = new Point(line._1());
-            Point bisectPoint = new Point((p1.getX() + line._2().getX() / 2), (p1.getY() + line._2().getY()) / 2);
-            Vector vector = new Vector(p1, line._2());
-            return new Tuple2<>(line._1(), new Line(bisectPoint, vector.getPerpendicularVector()));
+            return new Tuple2<>(line._1(), line._2().getEquidistantLine(p1));
         });
 
         JavaPairRDD<String, Iterable<Line>> network = lineNetwork.groupByKey();
-
 
         JavaPairRDD<String, Polygon> cell = network.flatMapToPair(C -> {
             Point center = new Point(C._1());
@@ -61,20 +54,33 @@ public class VoronoiSpark2 {
             Double Y = Double.parseDouble(conf.get("WindowY"));
             Point p1 = new Point(0, 0);
             Point p2 = new Point(X, 0);
-            Point p3 = new Point(0, Y);
-            Point p4 = new Point(X, Y);
-            Polygon polygon = new Polygon(List.of(p1, p2, p3, p4));
+            Point p3 = new Point(X, Y);
+            Point p4 = new Point(0, Y);
+
+            Polygon polygon = new Polygon();
+            polygon.addPoint(p1);
+            polygon.addPoint(p2);
+            polygon.addPoint(p3);
+            polygon.addPoint(p4);
 
             for (Line line : C._2()) {
                 polygon.splitPolygon(line, center);
             }
-            return List.of(new Tuple2<>(C._1(), polygon)).iterator();
+            List<Tuple2<String, Polygon>> linesPolygon = new ArrayList<>();
+            linesPolygon.add(new Tuple2<>(C._1(), polygon));
+            return linesPolygon.iterator();
+
         });
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time required = " + (endTime - startTime));
+        FileWriter writer = new FileWriter("voronoi_diagram.txt");
+        PrintWriter printWriter = new PrintWriter(writer);
 
         Map<String, Polygon> polygonMap = cell.collectAsMap();
         for (String key : polygonMap.keySet()) {
-            System.out.println("sitePOint: " + key + " " + polygonMap.toString());
+            printWriter.println(key + "\t" + polygonMap.get(key).toString());
         }
+        printWriter.close();
 
     }
 
