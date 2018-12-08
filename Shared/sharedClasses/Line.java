@@ -46,16 +46,26 @@ public class Line implements java.io.Serializable{
         double determinant = a1 * b2 - a2 * b1;
 
         if (determinant != 0) {
-            double x =  Math.floor((b2 * c1 - b1 * c2) / determinant * 1000) / 1000;
-            double y = Math.floor((a1 * c2 - a2 * c1) / determinant * 1000) / 1000;
+            double x = roundToPlaces((b2 * c1 - b1 * c2)/determinant, 3);
+            double y = roundToPlaces((a1 * c2 - a2 * c1)/determinant, 3);
 
+            double ax = roundToPlaces(a.getX(), 3);
+            double ay = roundToPlaces(a.getY(), 3);
+            double bx = roundToPlaces(b.getX(), 3);
+            double by = roundToPlaces(b.getY(), 3);
+            		
             // Check if intersection is in between point a and b
-            if (Math.min(a.getX(), b.getX()) <= x && Math.max(a.getX(), b.getX()) >= x &&
-                Math.min(a.getY(), b.getY()) <= y && Math.max(a.getY(), b.getY()) >= y) {
+            if (Math.min(ax, bx) <= x && Math.max(ax, bx) >= x &&
+                Math.min(ay, by) <= y && Math.max(ay, by) >= y) {
                 return new Point(x, y);
             }
         }
 
         return null;
+    }
+    
+    public double roundToPlaces(double value, int places) {
+        double scale = Math.pow(10, places);
+        return Math.round(value * scale) / scale;
     }
 }
