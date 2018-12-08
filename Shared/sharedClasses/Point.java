@@ -51,23 +51,23 @@ public class Point implements java.io.Serializable{
     public String toString() {
         return "" + x + " " + y;
     }
-    
- // Overriding equals() to compare two points by the coordinates 
+
+ // Overriding equals() to compare two points by the coordinates
     @Override
-    public boolean equals(Object o) { 
-  
-        // If the object is compared with itself then return true   
-        if (o == this) { 
-            return true; 
-        } 
-  
-        if (!(o instanceof Point)) { 
-            return false; 
-        } 
-          
-        Point p = (Point) o; 
-          
+    public boolean equals(Object o) {
+
+        // If the object is compared with itself then return true
+        if (o == this) {
+            return true;
+        }
+
+        if (!(o instanceof Point)) {
+            return false;
+        }
+
+        Point p = (Point) o;
+
         return Double.compare(x, p.x) == 0
-                && Double.compare(y, p.y) == 0; 
+                && Double.compare(y, p.y) == 0;
     }
 }

@@ -1,4 +1,3 @@
-import java.util.List;
 import java.util.ArrayList;
 import java.io.*;
 
@@ -6,18 +5,11 @@ public class Polygon implements java.io.Serializable{
 
     private ArrayList<Point> points;
 
-    public ArrayList<Point> getPoints() {
-		return points;
-	}
-
-	public void setPoints(ArrayList<Point> points) {
-		this.points = points;
-	}
-
 	public Polygon(ArrayList<Point> points) {
         this.points = points;
     }
-	
+
+    /** Parses polygon points from string value */
 	public Polygon (String line) {
 		this.points = new ArrayList<Point>();
 		for (String val : line.split(";")) {
@@ -26,7 +18,16 @@ public class Polygon implements java.io.Serializable{
 	}
 
     public Polygon() {
-        points = new ArrayList<>();
+        points = new ArrayList<Point>();
+    }
+
+    /** Creates new polygon representing the bounding box of the voronoi diagram */
+    public Polygon(int sizeX, int sizeY) {
+        points = new ArrayList<Point>();
+        addPoint(new Point(0, 0));
+        addPoint(new Point(sizeX, 0));
+        addPoint(new Point(sizeX, sizeY));
+        addPoint(new Point(0, sizeY));
     }
 
     public void addPoint(Point point) {
@@ -35,12 +36,6 @@ public class Polygon implements java.io.Serializable{
 
     public void removePoint(Point point) {
     	points.remove(point);
-    }
-
-    public boolean containsPoint(Point point){
-    	//TODO: check if polygon contain point
-
-    	return false;
     }
 
     public Polygon getCopy() {
@@ -78,11 +73,11 @@ public class Polygon implements java.io.Serializable{
             Point intersection = line.findIntersectionWithSide(last, point);
         	if(intersection != null) {
 	        	if(intersection.equals(last)) continue;
-	        	
+
 	        	// if intersection was found add the intersection to both polygons
 	        	p1.addPoint(intersection);
 	        	if(p2!=null)p2.addPoint(intersection);
-                
+
 	        	if (intersection1 == null) {
 	        		intersection1 = intersection;
                 } else if (intersection2 == null) {

@@ -29,7 +29,7 @@ public class PointsGen {
 	}
 
 	private static List<String> createPoints(int numPoints, int sizeX, int sizeY) {
-		List<String> points = new ArrayList<>();
+		List<String> points = new ArrayList<String>();
 		for (int i = 0; i < numPoints; i++) {
 			int x = (int) (Math.random() * sizeX);
 			int y = (int) (Math.random() * sizeY);
