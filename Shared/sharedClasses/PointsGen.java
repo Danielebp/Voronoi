@@ -28,6 +28,7 @@ public class PointsGen {
 		}
 	}
 
+	// creates random set of points to generate the voronoi diagram
 	private static List<String> createPoints(int numPoints, int sizeX, int sizeY) {
 		List<String> points = new ArrayList<String>();
 		for (int i = 0; i < numPoints; i++) {
