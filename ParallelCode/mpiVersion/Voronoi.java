@@ -11,39 +11,43 @@ import mpi.*;
 public class Voronoi {
 
 	public static void main(String[] args) throws MPIException{
+		// read parameters
 		String fileIn = args[0];
 		String fileOut = args [1];
 		Integer maxX = Integer.parseInt(args[2]);
 		Integer maxY = Integer.parseInt(args[3]);
 
-				
 		int[] nPoints = new int[1];
 		Polygon initialBoundary = new Polygon();
 		
-		MPI.Init( args );		      // Start MPI computation
+		// Start MPI computation
+		MPI.Init( args );
 		
+		// read mpi details
 		int rankSize = MPI.COMM_WORLD.Size();
 		int rank = MPI.COMM_WORLD.Rank( );   
 		
+		// tracking time
 		long start;
-		
 		if(rank == 0) start = System.currentTimeMillis();
 		
 		ArrayList<Point> points = new ArrayList();
 		
+		// rank 0  read points from input file
 		if (rank == 0) {
 			points = loadPoints(fileIn);
 			nPoints[0] = points.size();
 		}
 
+		// all ranks should know the number of points
 		MPI.COMM_WORLD.Bcast(nPoints, 0, 1, MPI.INT, 0);
-		Object[] VoronoiPoints = new Object[nPoints[0]]; 
 		
+		// prepares data for sending accross all ranks
+		Object[] VoronoiPoints = new Object[nPoints[0]]; 
 		if (rank == 0) {
 			VoronoiPoints = points.toArray();
 			initialBoundary = defineBoundaries (maxX, maxY);
 		}
-		
 		Object[] myPoints = new Object[nPoints[0]/rankSize];
 		Object[] finalDiagram = new Object[nPoints[0]];
 		Object[] strBounds = new Object[1];
@@ -51,40 +55,57 @@ public class Voronoi {
 			strBounds[0] = initialBoundary.toString();
 		}
 		
+		// broadcasts the points and boundaryBox
 		MPI.COMM_WORLD.Bcast(VoronoiPoints, 0, nPoints[0], MPI.OBJECT, 0);
 		MPI.COMM_WORLD.Bcast(strBounds, 0, 1, MPI.OBJECT, 0);
 		
+		// scatter the data so each rank has a set of points to compute
 		MPI.COMM_WORLD.Scatter(VoronoiPoints,0,nPoints[0]/rankSize,MPI.OBJECT,myPoints,0,nPoints[0]/rankSize,MPI.OBJECT,0);
 		
-		//System.out.println(rank + ": " + (String)strBounds[0]);
+		// loads the initial boundary that is common to all points
     	initialBoundary = new Polygon((String)strBounds[0]);
-		
+    	
+    	// partial diagram created by each rank
     	Object [] myDiagram = new Object[myPoints.length];
     	int i = 0;
+
+    	// each rank runs computation for each of its points
 		for(Object ob1 : myPoints) {
+			
+			// creates point and initial cell
 			Point initialPoint = (Point)ob1;
-			//System.out.println(rank + ": " + initialPoint.toString());
 			Polygon cell = initialBoundary.getCopy();
 			
+			// iterates over each other points
 			for(Object ob2 : VoronoiPoints) {
 				Point pair = (Point)ob2;
+				
+				// do not need to compare with the point itself
 				if(initialPoint.equals(pair)) continue;
+				
+				// calculates the equidistant line
 				Line middleLine = pair.getEquidistantLine(initialPoint);
 				if (middleLine == null) continue;
+
+				// tries to reduce the cell using equidistant line
 				cell.splitPolygon(middleLine, initialPoint);
 			}
 			
+			// stores the cell to the partial diagram
 			myDiagram[i++] = (initialPoint.toString() + "\t" + cell.toString());
 		}
 		
+		// rank_0 gets all the partial diagrams from the other ranks
 		MPI.COMM_WORLD.Gather(myDiagram,0,nPoints[0]/rankSize,MPI.OBJECT, finalDiagram,0,nPoints[0]/rankSize,MPI.OBJECT, 0);
 		
 		long finish;
 		
 		if(rank == 0) finish = System.currentTimeMillis();
 		
-	    MPI.Finalize( );		      // Finish MPI computation
+		// Finish MPI computation
+	    MPI.Finalize( );
 
+	    // write output file
 	    try {
 		    PrintWriter out = new PrintWriter(fileOut);		   
 	
@@ -97,6 +118,7 @@ public class Voronoi {
 			System.out.println(e.toString());
 		}
 	    
+	    // prints time
 	    if(rank == 0) {
 	    	long timeElapsed = finish - start;
 	    	System.out.println("Elapsed Time: " + timeElapsed/1000);

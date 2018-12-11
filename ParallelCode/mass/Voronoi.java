@@ -25,15 +25,21 @@ public class Voronoi {
 
         MASS.getLogger().debug( "hello" );
 
+        // read arguments
         Object[] points = (Object[]) readPoints(args[0]).toArray();
         Integer maxX = Integer.parseInt(args[2]);
 		Integer maxY = Integer.parseInt(args[3]);
         MyArgs myArgs = new MyArgs(maxX, maxY, points);
         
         MASS.getLogger().debug( "No of points: " + points.length );
+        
+        // creates one place for each point, each place will be a cell
         Places places = new Places(1, Cell.class.getName(), (Object)myArgs, points.length);
+        
+        // make places calculate the cells
         Object[] objects = (Object[]) places.callAll(Cell.MAKE_CELL, points);
 
+        // prints output to output file
         try {
             PrintWriter out = new PrintWriter(args[1]);
             for (Object object : objects) {

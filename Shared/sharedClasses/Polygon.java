@@ -62,22 +62,30 @@ public class Polygon implements java.io.Serializable{
     	// first point pairs with the last
     	Point last = points.get(points.size() - 1);;
 
+    	// iterates over all the points that delimits the cell trying to find the intersections
         for (Point point : points) {
+        	// skips the initial point
             if (point.equals(initialPoint)) continue;
+            
+            // depending on how many intersections it has found it will decide where to put the next point 
     		if(intersection1 == null || intersection2 != null) {
     			p1.addPoint(last);
             } else {
                 p2.addPoint(last);
             }
 
+    		// tries to find an intersection between the line passed and the side of the 
+    		// polygon delimited by the current and the last point
             Point intersection = line.findIntersectionWithSide(last, point);
         	if(intersection != null) {
-	        	if(intersection.equals(last)) continue;
+	        	// if intersection is over the previous point it was already added
+        		if(intersection.equals(last)) continue;
 
 	        	// if intersection was found add the intersection to both polygons
 	        	p1.addPoint(intersection);
 	        	if(p2!=null)p2.addPoint(intersection);
 
+	        	// stores the intersections, each line should intersect the polygon twice 
 	        	if (intersection1 == null) {
 	        		intersection1 = intersection;
                 } else if (intersection2 == null) {

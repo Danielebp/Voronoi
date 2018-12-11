@@ -13,6 +13,7 @@ public class Cell extends Place {
     public Cell(Object o) {
     	MyArgs myArgs = (MyArgs)o;
         
+    	// reads arguments
     	sizeX  = myArgs.maxX;
     	sizeY  = myArgs.maxY;
         points = new Point[myArgs.points.length];
@@ -38,10 +39,18 @@ public class Cell extends Place {
         MASS.getLogger().debug( "entering make cell" );
         MASS.getLogger().debug( "Initial point: " + initialPoint.toString() );
 
+        // polygon that represents the cell starts will the whole space
         Polygon polygon = new Polygon(sizeX, sizeY);
+        
+        // iterates over all other points
         for (Point point : points) {
+        	// skip if its the same point
             if (point.equals(initialPoint)) continue;
+            
+            // calculates the equidistant line between the initial point and every other point
             Line line = initialPoint.getEquidistantLine(point);
+            
+            // tries to reduce the cell with the equidistant line
             polygon.splitPolygon(line, initialPoint);
         }
 
