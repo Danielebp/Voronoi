@@ -2,6 +2,7 @@ import edu.uw.bothell.css.dsl.MASS.Agents;
 import edu.uw.bothell.css.dsl.MASS.MASS;
 import edu.uw.bothell.css.dsl.MASS.Places;
 import edu.uw.bothell.css.dsl.MASS.logging.LogLevel;
+import sun.security.mscapi.KeyStore.MY;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -25,12 +26,16 @@ public class Voronoi {
         MASS.getLogger().debug( "hello" );
 
         Object[] points = (Object[]) readPoints(args[0]).toArray();
+        Integer maxX = Integer.parseInt(args[2]);
+		Integer maxY = Integer.parseInt(args[3]);
+        MyArgs myArgs = new MyArgs(maxX, maxY, points);
+        
         MASS.getLogger().debug( "No of points: " + points.length );
-        Places places = new Places(1, Cell.class.getName(), points, points.length);
+        Places places = new Places(1, Cell.class.getName(), (Object)myArgs, points.length);
         Object[] objects = (Object[]) places.callAll(Cell.MAKE_CELL, points);
 
         try {
-            PrintWriter out = new PrintWriter("results.txt");
+            PrintWriter out = new PrintWriter(args[1]);
             for (Object object : objects) {
                 out.println((String) object);
             }

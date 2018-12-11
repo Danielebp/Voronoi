@@ -11,10 +11,13 @@ public class Cell extends Place {
     private Point[] points;
 
     public Cell(Object o) {
-        Object[] objects = (Object[]) o;
-        points = new Point[objects.length];
-        for (int i = 0; i < objects.length; i++) {
-            points[i] = (Point) objects[i];
+    	MyArgs myArgs = (MyArgs)o;
+        
+    	sizeX  = myArgs.maxX;
+    	sizeY  = myArgs.maxY;
+        points = new Point[myArgs.points.length];
+        for (int i = 0; i < myArgs.points.length; i++) {
+            points[i] = (Point) myArgs.points[i];
         }
     }
 
@@ -47,3 +50,4 @@ public class Cell extends Place {
         return initialPoint.toString() + "\t" + polygon.toString();
     }
 }
+
