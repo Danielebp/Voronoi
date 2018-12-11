@@ -64,7 +64,7 @@ public class VoronoiSpark {
             linesPolygon.add(new Tuple2<>(C._1(), polygon));
             return linesPolygon.iterator();
         });
-
+        // collecting all to driver file
         Map<String, Polygon> polygonMap = cell.collectAsMap();
         long endTime = System.currentTimeMillis();
         System.out.println("Time required = " + (endTime - startTime));

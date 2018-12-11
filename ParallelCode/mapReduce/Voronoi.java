@@ -61,32 +61,33 @@ public class Voronoi {
 			while (values.hasNext()) {
 				String value = values.next().toString();
 
+				// Check if value contains lines
 				if (value.contains("_")) {
+					// Collect all lines together
 					String[] linesStr = value.split(":");
 					for (String lineStr : linesStr) {
-						System.out.println(lineStr);
 						lines.add(new Line(lineStr));
 					}
 				} else {
+					// If it conatins points it's already the right polygon
 					output.collect(key, new Text(value));
 					return;
 				}
 			}
 
+			// Check if all lines were collected
 			if (lines.size() == keyCount - 1) {
+				// If we have all lines we can build a polygon
 				Point point = new Point(key.toString());
-				Polygon polygon = new Polygon();
-				polygon.addPoint(new Point(0, 0));
-				polygon.addPoint(new Point(sizeX, 0));
-				polygon.addPoint(new Point(sizeX, sizeY));
-				polygon.addPoint(new Point(0, sizeY));
+				Polygon polygon = new Polygon(sizeX, sizeY);
+
 				for (Line line : lines) {
 					polygon.splitPolygon(line, point);
 				}
 
-				System.out.println(polygon.toString());
 				output.collect(key, new Text(polygon.toString()));
 			} else {
+				// If we don't have all lines we can only collect all combined lines
 				StringBuilder sb = new StringBuilder();
 				for (Line line : lines) {
 					sb.append(line.toString());
@@ -101,6 +102,8 @@ public class Voronoi {
 	}
 
 	public static void main(String[] args) throws Exception {
+		long startTime = System.currentTimeMillis();
+
 		JobConf conf = new JobConf(Voronoi.class);
 		conf.setJobName("voronoi");
 
@@ -123,8 +126,15 @@ public class Voronoi {
 		conf.set("sizeY", args[4]);
 
 		JobClient.runJob(conf);
+
+		long duration = System.currentTimeMillis() - startTime;
+		System.out.println("Duration: " + (duration / 1_000) + "s");
 	}
 
+	/**
+	Sets every point contained in the file with the given filename as a key for
+	the map phase in the job conf
+	*/
 	private static void setKeyPoints(JobConf conf, String filename) {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -137,8 +147,7 @@ public class Voronoi {
 				line = br.readLine();
 			}
 
-			System.out.println("Key count: " + keyCount);
-
+			// Set total number of keys
 			conf.set("keyCount", String.valueOf(keyCount));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

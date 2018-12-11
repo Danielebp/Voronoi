@@ -79,6 +79,7 @@ public class VoronoiSpark2 {
             return linesPolygon.iterator();
 
         });
+        // collecting all to driver
         Map<String, Polygon> polygonMap = cell.collectAsMap();
         long endTime = System.currentTimeMillis();
         System.out.println("Time required = " + (endTime - startTime));
