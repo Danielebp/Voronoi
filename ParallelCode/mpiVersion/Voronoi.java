@@ -151,14 +151,7 @@ public class Voronoi {
 		double maxX = 1.0 *mX;
 		double minY = 0.0;
 		double maxY = 1.0*mY;
-		/*
-		for(Point p : points) {
-			if(p.getX() < minX) minX = p.getX();
-			if(p.getX() > maxX) maxX = p.getX();
-			if(p.getY() < minX) minY = p.getY();
-			if(p.getY() < minX) maxY = p.getY();
-		}
-		*/
+		
 		Polygon boundaryBox = new Polygon();
 		
 		boundaryBox.addPoint(new Point(minX , minY ));
