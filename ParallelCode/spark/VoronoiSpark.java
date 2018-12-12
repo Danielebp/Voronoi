@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.io.PrintWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class VoronoiSpark {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // start Sparks
         String inputFile = args[0];
         SparkConf conf = new SparkConf().setAppName("Voronoi Diagram");

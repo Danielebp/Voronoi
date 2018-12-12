@@ -53,7 +53,7 @@ public class VoronoiSpark2 {
 
         // makes polygon, creates key value pair of points and a list of
         // intersecting point to make the polygon
-        JavaPairRDD<String, String> cell = network.flatMapToPair(C -> {
+        JavaPairRDD<String, Polygon> cell = network.flatMapToPair(C -> {
             Point center = new Point(C._1());
             Double X = Double.parseDouble(conf.get("WindowX"));
             Double Y = Double.parseDouble(conf.get("WindowY"));
@@ -71,8 +71,8 @@ public class VoronoiSpark2 {
             for (Line line : C._2()) {
                 polygon.splitPolygon(line, center);
             }
-            List<Tuple2<String, String>> linesPolygon = new ArrayList<>();
-            linesPolygon.add(new Tuple2<>(C._1(), polygon.toString()));
+            List<Tuple2<String, Polygon>> linesPolygon = new ArrayList<>();
+            linesPolygon.add(new Tuple2<>(C._1(), polygon));
             return linesPolygon.iterator();
 
         });
@@ -80,7 +80,7 @@ public class VoronoiSpark2 {
         Map<String, Polygon> polygonMap = cell.collectAsMap();
         long endTime = System.currentTimeMillis();
         System.out.println("Time required = " + (endTime - startTime));
-        FileWriter writer = new FileWriter("voronoi_diagram.txt");
+        FileWriter writer = new FileWriter("voronoi_diagram2.txt");
         PrintWriter printWriter = new PrintWriter(writer);
         // write output into a file
         for (String key : polygonMap.keySet()) {
