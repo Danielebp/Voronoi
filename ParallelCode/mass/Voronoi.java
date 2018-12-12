@@ -2,7 +2,6 @@ import edu.uw.bothell.css.dsl.MASS.Agents;
 import edu.uw.bothell.css.dsl.MASS.MASS;
 import edu.uw.bothell.css.dsl.MASS.Places;
 import edu.uw.bothell.css.dsl.MASS.logging.LogLevel;
-import sun.security.mscapi.KeyStore.MY;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -33,12 +32,17 @@ public class Voronoi {
         
         MASS.getLogger().debug( "No of points: " + points.length );
         
+        long start = System.currentTimeMillis();
+		
+        
         // creates one place for each point, each place will be a cell
         Places places = new Places(1, Cell.class.getName(), (Object)myArgs, points.length);
         
         // make places calculate the cells
         Object[] objects = (Object[]) places.callAll(Cell.MAKE_CELL, points);
 
+        long finish = System.currentTimeMillis();
+		
         // prints output to output file
         try {
             PrintWriter out = new PrintWriter(args[1]);
@@ -53,6 +57,9 @@ public class Voronoi {
 
         MASS.getLogger().debug( "We're through" );
         MASS.finish();
+        
+        long timeElapsed = finish - start;
+    	System.out.println("Elapsed Time: " + timeElapsed/1000);
     }
 
     private static List<Point> readPoints(String filename) {
