@@ -57,6 +57,8 @@ public class VoronoiSpark {
             polygon.addPoint(p3);
             polygon.addPoint(p4);
 
+            // makes polygon by using the list of list and creates a new
+            // key value pair of point and list of intersecting points to make polygon
             for (Line line : C._2()) {
                 polygon.splitPolygon(line, center);
             }

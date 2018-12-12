@@ -32,15 +32,12 @@ public class VoronoiSpark2 {
         JavaRDD<Point> points = lines.map(s -> new Point(s));
         // creating a key value pair of points
         List<Point> listOfPoints = points.collect();
+
         JavaPairRDD<String, Point> pair = points.flatMapToPair(pr -> {
             List<Tuple2<String, Point>> pointPairs = new ArrayList<>();
             for (Point point : listOfPoints) {
                 if (!point.equals(pr)) {
-                    double x1 = Math.abs(pr.getX()- point.getX())
-                    double x2 = Math.abs(pr.getY()-point.getY());
-                    if(x1 < 200 && x2 < 200){
-                        pointPairs.add(new Tuple2<>(pr.toString(), point));
-                    }
+                    pointPairs.add(new Tuple2<>(pr.toString(), point));
                 }
             }
             return pointPairs.iterator();

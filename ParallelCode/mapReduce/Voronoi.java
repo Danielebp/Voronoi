@@ -128,7 +128,7 @@ public class Voronoi {
 		JobClient.runJob(conf);
 
 		long duration = System.currentTimeMillis() - startTime;
-		System.out.println("Duration: " + (duration / 1_000) + "s");
+		System.out.println("Duration: " + duration);
 	}
 
 	/**
