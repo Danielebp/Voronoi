@@ -16,10 +16,7 @@ public class Cell extends Place {
     	// reads arguments
     	sizeX  = myArgs.maxX;
     	sizeY  = myArgs.maxY;
-        points = new Point[myArgs.points.length];
-        for (int i = 0; i < myArgs.points.length; i++) {
-            points[i] = (Point) myArgs.points[i];
-        }
+    	points = myArgs.getPoints();
     }
 
     /**
